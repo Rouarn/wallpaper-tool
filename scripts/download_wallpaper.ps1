@@ -13,17 +13,17 @@ try {
         New-Item -ItemType Directory -Path $destDir -Force | Out-Null
     }
 
-    Write-Host "[$date] Downloading wallpaper from $url..."
+    Write-Host "[$date] 正在从 $url 下载壁纸..."
     
     # 下载图片
     Invoke-WebRequest -Uri $url -OutFile $destFile -UseBasicParsing
     
-    $msg = "[$date] Success: Wallpaper updated at $destFile"
+    $msg = "[$date] 成功: 壁纸已更新至 $destFile"
     Write-Host $msg
     Add-Content -Path $logFile -Value $msg
 
 } catch {
-    $errorMsg = "[$date] Error: Failed to download wallpaper. Details: $_"
+    $errorMsg = "[$date] 错误: 下载壁纸失败。详情: $_"
     Write-Error $errorMsg
     Add-Content -Path $logFile -Value $errorMsg
 }

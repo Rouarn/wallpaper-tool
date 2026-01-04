@@ -1,20 +1,29 @@
 $WshShell = New-Object -comObject WScript.Shell
 $StartupDir = $WshShell.SpecialFolders.Item("Startup")
 $ShortcutPath = "$StartupDir\UpdateTerminalWallpaper.lnk"
-$TargetScript = Join-Path $PSScriptRoot "download_wallpaper.ps1"
+
+# 目标指向新生成的 EXE 文件
+# 假设 install_startup.ps1 在 scripts 目录，EXE 在 bin 目录
+$TargetExe = Join-Path $PSScriptRoot "..\bin\WallpaperTool.exe"
+$TargetExe = [System.IO.Path]::GetFullPath($TargetExe)
 
 try {
+    if (-not (Test-Path $TargetExe)) {
+        throw "在 $TargetExe 未找到 WallpaperTool.exe。请先构建项目。"
+    }
+
     $Shortcut = $WshShell.CreateShortcut($ShortcutPath)
-    # 使用 PowerShell 运行脚本，并设置为 Hidden 窗口模式（静默运行）
-    $Shortcut.TargetPath = "powershell.exe"
-    $Shortcut.Arguments = "-ExecutionPolicy Bypass -WindowStyle Hidden -File `"$TargetScript`""
-    $Shortcut.WorkingDirectory = $PSScriptRoot
-    $Shortcut.Description = "Auto-update Terminal wallpaper on login"
+    # 直接指向 EXE 文件
+    $Shortcut.TargetPath = $TargetExe
+    # 添加 -silent 参数以触发后台自动下载逻辑
+    $Shortcut.Arguments = "-silent"
+    $Shortcut.WorkingDirectory = [System.IO.Path]::GetDirectoryName($TargetExe)
+    $Shortcut.Description = "登录时自动更新终端壁纸"
     $Shortcut.Save()
 
-    Write-Host "Startup shortcut successfully created at:"
+    Write-Host "启动快捷方式已成功创建于："
     Write-Host $ShortcutPath
-    Write-Host "`nThe wallpaper tool will now run automatically when you log in."
+    Write-Host "`n壁纸工具现在将在您登录时自动（静默）运行。"
 } catch {
-    Write-Error "Failed to create startup shortcut: $_"
+    Write-Error "创建启动快捷方式失败: $_"
 }
