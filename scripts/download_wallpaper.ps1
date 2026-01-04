@@ -1,29 +1,29 @@
-# 配置参数
+ # Configuration
 $destDir = "C:\Users\29373\Pictures\Saved Pictures"
 $destFile = "$destDir\wallpaper_Terminal.jpg"
 $url = "https://picsum.photos/1920/1080"
 $logFile = "$PSScriptRoot\..\bin\wallpaper_log.txt"
 
-# 获取当前时间用于日志
+# Get current time for logging
 $date = Get-Date -Format "yyyy-MM-dd HH:mm:ss"
 
 try {
-    # 确保目录存在
+    # Ensure directory exists
     if (-not (Test-Path $destDir)) {
         New-Item -ItemType Directory -Path $destDir -Force | Out-Null
     }
 
-    Write-Host "[$date] 正在从 $url 下载壁纸..."
+    Write-Host "[$date] Downloading wallpaper from $url ..."
     
-    # 下载图片
+    # Download image
     Invoke-WebRequest -Uri $url -OutFile $destFile -UseBasicParsing
     
-    $msg = "[$date] 成功: 壁纸已更新至 $destFile"
+    $msg = "[$date] Success: Wallpaper updated to $destFile"
     Write-Host $msg
     Add-Content -Path $logFile -Value $msg
 
 } catch {
-    $errorMsg = "[$date] 错误: 下载壁纸失败。详情: $_"
+    $errorMsg = "[$date] Error: Failed to download wallpaper. Details: $_"
     Write-Error $errorMsg
     Add-Content -Path $logFile -Value $errorMsg
 }
